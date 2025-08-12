@@ -11,7 +11,8 @@
     "ios": {
       "supportsTablet": true,
       "bitcode": false,
-      "bundleIdentifier": "com.jensgiant.ExpoLiveKit"
+      "bundleIdentifier": "com.jensgiant.ExpoLiveKit",
+      "appleTeamId": "7LMQJU5S6S"
     },
     "android": {
       "adaptiveIcon": {

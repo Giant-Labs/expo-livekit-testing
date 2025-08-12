@@ -2,11 +2,11 @@ import { useConnectionState, useRoomContext } from "@livekit/components-react";
 import {
   AudioSession,
   LiveKitRoom,
+  registerGlobals,
   setLogLevel,
   useIOSAudioManagement,
   useVoiceAssistant,
 } from "@livekit/react-native";
-import { registerGlobals } from "@livekit/react-native-webrtc";
 import { setAudioModeAsync, useAudioPlayer } from "expo-audio";
 import { LogLevel } from "livekit-client";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -14,6 +14,8 @@ import { Button, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 registerGlobals();
+
+const enableRinging = true;
 
 const audioSource = require("@/assets/audio/ringing.m4a");
 setLogLevel(LogLevel.warn);
@@ -96,18 +98,7 @@ export default function App() {
 
   const [loading, setLoading] = useState(false);
 
-  const ringingPlayer = useAudioPlayer(audioSource);
-  useEffect(() => {
-    ringingPlayer.loop = true;
-
-    setAudioModeAsync({
-      playsInSilentMode: true,
-      interruptionMode: "mixWithOthers",
-    });
-  }, [ringingPlayer]);
-
   const fetchCredentials = useCallback(async () => {
-    ringingPlayer.play();
     setLoading(true);
     const res = await fetch(
       `https://bigfoot.giant.org/api/app/get-testing-token`,
@@ -119,10 +110,7 @@ export default function App() {
     const data = await res.json();
     setCredentials(data);
     setLoading(false);
-    setTimeout(() => {
-      ringingPlayer.pause();
-    }, 3000);
-  }, [ringingPlayer]);
+  }, []);
 
   const onEndPress = () => {
     setCredentials(undefined);
@@ -130,6 +118,7 @@ export default function App() {
 
   return (
     <SafeAreaView>
+      {enableRinging && loading && <RingingPlayer />}
       {loading ? (
         <Text>Getting credentials... (calling)</Text>
       ) : !credentials ? (
@@ -148,3 +137,17 @@ export default function App() {
     </SafeAreaView>
   );
 }
+
+const RingingPlayer = () => {
+  const ringingPlayer = useAudioPlayer(audioSource);
+  useEffect(() => {
+    ringingPlayer.loop = true;
+    ringingPlayer.play();
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      interruptionMode: "mixWithOthers",
+    });
+  }, [ringingPlayer]);
+
+  return null;
+};
