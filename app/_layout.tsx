@@ -109,10 +109,13 @@ export default function App() {
   const fetchCredentials = useCallback(async () => {
     ringingPlayer.play();
     setLoading(true);
-    const res = await fetch(`http://localhost:3000/api/app/get-testing-token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
+    const res = await fetch(
+      `https://bigfoot.giant.org/api/app/get-testing-token`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
     const data = await res.json();
     setCredentials(data);
     setLoading(false);
